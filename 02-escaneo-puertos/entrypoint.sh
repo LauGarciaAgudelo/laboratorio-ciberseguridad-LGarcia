@@ -1,27 +1,15 @@
 
 #!/bin/sh
 
-HOST="servidor-web-dmz-lgarcia.onrender.com"
+HOST="${TARGET_HOST:-127.0.0.1}"
 
-echo "=========================================="
-echo "MODULO 02 - VERIFICACION DE PUERTO TCP"
-echo "Estudiante: Laura Garcia"
-echo "Servidor objetivo: $HOST"
-echo "=========================================="
+echo "=== INICIANDO ESCANEO DE PUERTOS Y RECONOCIMIENTO EN LA DMZ ==="
+echo "Analizando puertos comunes sobre $HOST..."
 
-echo "Resolviendo nombre del servidor..."
-nslookup "$HOST" || true
+for port in 21 22 80 443 8080 3306; do
+  nc -zv -w 2 "$HOST" "$port" 2>&1
+done
 
-echo "Comprobando conectividad TCP al puerto 443..."
-
-if nc -zv -w 5 "$HOST" 443 2>&1; then
-    echo "[RESULTADO] Puerto 443 accesible"
-else
-    echo "[RESULTADO] No se pudo establecer conexion TCP"
-fi
-
-echo "=========================================="
-echo "VERIFICACION FINALIZADA"
-echo "=========================================="
+echo "=== ESCANEO DE PUERTOS FINALIZADO ==="
 
 exec python3 -m http.server 8080
